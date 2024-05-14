@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    volumes:
+      - ./config:/config
+    environment:
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASS: example
+      DB_NAME: shopdb
+    networks:
+      - backend
+    logging:
+      driver: json-file
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  db:
+    image: postgres:13
+    container_name: shop-aggregator-db-1
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: postgres
+      POSTGRES_DB: shopdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:
